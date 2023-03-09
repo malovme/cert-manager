@@ -34,7 +34,7 @@ import (
 )
 
 var (
-	Log = klogr.New().WithName("cert-manager")
+	Log = klogr.NewWithOptions().WithName("cert-manager")
 )
 
 const (
