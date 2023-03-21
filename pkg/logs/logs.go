@@ -23,6 +23,7 @@ import (
 	"log"
 
 	"github.com/go-logr/logr"
+	"github.com/spf13/pflag"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
@@ -58,16 +59,32 @@ func (writer GlogWriter) Write(data []byte) (n int, err error) {
 }
 
 // InitLogs initializes logs the way we want for kubernetes.
-func InitLogs(fs *flag.FlagSet) {
+func InitLogs(fs *pflag.FlagSet) {
 	logs.InitLogs()
 
 	if fs == nil {
-		fs = flag.CommandLine
+		fs = pflag.CommandLine
 	}
 	_ = fs.Set("logtostderr", "true")
 
 	log.SetOutput(GlogWriter{})
 	log.SetFlags(0)
+
+	// Add the klog flags by converting them to pflags, and mark deprecated
+	// flags.
+	klogflags := flag.NewFlagSet("", flag.ContinueOnError)
+	klog.InitFlags(klogflags)
+	klogflags.VisitAll(func(f *flag.Flag) {
+		pf := pflag.PFlagFromGoFlag(f)
+		switch f.Name {
+		case "v", "vmodule":
+			// Unchanged.
+		default:
+			// Deprecated.
+			pf.Deprecated = fmt.Sprintf("this flag will be removed in cert-manager 1.15")
+		}
+		fs.AddFlag(pf)
+	})
 }
 
 // FlushLogs flushes logs immediately.
