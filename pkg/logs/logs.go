@@ -64,6 +64,7 @@ func InitLogs(fs *flag.FlagSet) {
 	if fs == nil {
 		fs = flag.CommandLine
 	}
+	klog.InitFlags(fs)
 	_ = fs.Set("logtostderr", "true")
 
 	log.SetOutput(GlogWriter{})
