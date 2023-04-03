@@ -17,9 +17,6 @@ limitations under the License.
 package options
 
 import (
-	"flag"
-	"os"
-
 	"github.com/spf13/pflag"
 
 	"github.com/cert-manager/cert-manager/pkg/logs"
@@ -30,7 +27,5 @@ func AddGlobalFlags(fs *pflag.FlagSet) {
 }
 
 func addKlogFlags(fs *pflag.FlagSet) {
-	local := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
-	logs.InitLogs(local)
-	fs.AddGoFlagSet(local)
+	logs.InitLogs(fs)
 }

@@ -18,10 +18,10 @@ package main
 
 import (
 	"context"
-	"flag"
 
 	"os"
 
+	"github.com/spf13/pflag"
 	ctrl "sigs.k8s.io/controller-runtime"
 
 	"github.com/cert-manager/cert-manager/cmd/cainjector/app"
@@ -35,16 +35,16 @@ func main() {
 	stopCh, exit := util.SetupExitHandler(util.GracefulShutdown)
 	defer exit() // This function might call os.Exit, so defer last
 
-	logf.InitLogs(flag.CommandLine)
+	logf.InitLogs(pflag.CommandLine)
 	defer logf.FlushLogs()
 	ctrl.SetLogger(logf.Log)
 
 	ctx := util.ContextWithStopCh(context.Background(), stopCh)
 
 	cmd := app.NewCommandStartInjectorController(ctx, os.Stdout, os.Stderr)
-	cmd.Flags().AddGoFlagSet(flag.CommandLine)
+	cmd.Flags().AddFlagSet(pflag.CommandLine)
 
-	flag.CommandLine.Parse([]string{})
+	pflag.CommandLine.Parse([]string{})
 	if err := cmd.Execute(); err != nil {
 		cmd.PrintErrln(err)
 		util.SetExitCode(err)

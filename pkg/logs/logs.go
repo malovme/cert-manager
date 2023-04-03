@@ -23,6 +23,7 @@ import (
 	"log"
 
 	"github.com/go-logr/logr"
+	"github.com/spf13/pflag"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
@@ -57,14 +58,28 @@ func (writer GlogWriter) Write(data []byte) (n int, err error) {
 	return len(data), nil
 }
 
-// InitLogs initializes logs the way we want for kubernetes.
-func InitLogs(fs *flag.FlagSet) {
+// InitLogs initializes logs the way we want for Kubernetes. It doesn't add the
+// flags "v" and "vmodule" which are meant to be hand.
+func InitLogs(fs *pflag.FlagSet) {
 	logs.InitLogs()
 
 	if fs == nil {
-		fs = flag.CommandLine
+		fs = pflag.CommandLine
 	}
-	klog.InitFlags(fs)
+
+	temp := flag.NewFlagSet("", flag.ExitOnError)
+	klog.InitFlags(temp)
+
+	// Two flags are added by both component-base/logs and klog, and we need to
+	// ignore the klog version of these two flags.
+	temp.VisitAll(func(f *flag.Flag) {
+		switch f.Name {
+		case "v", "vmodule":
+			// Skip.
+		default:
+			fs.AddGoFlag(f)
+		}
+	})
 	_ = fs.Set("logtostderr", "true")
 
 	log.SetOutput(GlogWriter{})
