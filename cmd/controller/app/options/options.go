@@ -427,7 +427,7 @@ func (o *ControllerOptions) Validate() error {
 		}
 	}
 
-	err := logsapi.ValidateAndApply(o.Logging, nil)
+	err := logsapi.ValidateAndApply(o.Logging, utilfeature.DefaultFeatureGate)
 	if err != nil {
 		errs = append(errs, err)
 	}

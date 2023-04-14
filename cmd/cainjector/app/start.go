@@ -40,6 +40,7 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
+	_ "github.com/cert-manager/cert-manager/internal/cainjector/feature"
 	cmdutil "github.com/cert-manager/cert-manager/internal/cmd/util"
 	"github.com/cert-manager/cert-manager/pkg/api"
 	"github.com/cert-manager/cert-manager/pkg/controller/cainjector"
@@ -112,7 +113,7 @@ func (o *InjectorControllerOptions) AddFlags(fs *pflag.FlagSet) {
 }
 
 func (o *InjectorControllerOptions) Validate() error {
-	err := logsapi.ValidateAndApply(o.Logging, nil)
+	err := logsapi.ValidateAndApply(o.Logging, utilfeature.DefaultFeatureGate)
 	if err != nil {
 		return err
 	}

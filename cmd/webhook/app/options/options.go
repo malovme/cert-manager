@@ -51,7 +51,7 @@ func (f *WebhookFlags) AddFlags(fs *pflag.FlagSet) {
 }
 
 func ValidateWebhookFlags(f *WebhookFlags) error {
-	err := logsapi.ValidateAndApply(f.Logging, nil)
+	err := logsapi.ValidateAndApply(f.Logging, utilfeature.DefaultFeatureGate)
 	if err != nil {
 		return err
 	}

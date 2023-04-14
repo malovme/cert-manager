@@ -19,6 +19,7 @@ package feature
 import (
 	"k8s.io/apimachinery/pkg/util/runtime"
 	"k8s.io/component-base/featuregate"
+	logsapi "k8s.io/component-base/logs/api/v1"
 
 	utilfeature "github.com/cert-manager/cert-manager/pkg/util/feature"
 )
@@ -85,6 +86,7 @@ const (
 
 func init() {
 	runtime.Must(utilfeature.DefaultMutableFeatureGate.Add(defaultCertManagerFeatureGates))
+	runtime.Must(logsapi.AddFeatureGates(utilfeature.DefaultMutableFeatureGate))
 }
 
 // defaultCertManagerFeatureGates consists of all known cert-manager feature keys.

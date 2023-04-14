@@ -17,7 +17,9 @@ limitations under the License.
 package feature
 
 import (
+	"k8s.io/apimachinery/pkg/util/runtime"
 	"k8s.io/component-base/featuregate"
+	logsapi "k8s.io/component-base/logs/api/v1"
 
 	utilfeature "github.com/cert-manager/cert-manager/pkg/util/feature"
 )
@@ -33,7 +35,8 @@ const (
 )
 
 func init() {
-	utilfeature.DefaultMutableFeatureGate.Add(cainjectorFeatureGates)
+	runtime.Must(utilfeature.DefaultMutableFeatureGate.Add(cainjectorFeatureGates))
+	runtime.Must(logsapi.AddFeatureGates(utilfeature.DefaultMutableFeatureGate))
 }
 
 // cainjectorFeatureGates defines all feature gates for the cainjector component.
